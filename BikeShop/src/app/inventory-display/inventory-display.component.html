@@ -1,0 +1,27 @@
+<div class="flex-container" fxLayout="row" style="float:right">
+  <mat-form-field class="full-width">
+    <mat-label>Filter Your shopping list by name</mat-label>
+    <input matInput value="" placeholder="Ex Ducati, KTM, Triumph, BMW" [(ngModel)]="filterText">
+  </mat-form-field>
+  <button fxLayout="row" fxLayoutAlign="end" mat-button (click)="onCartClick()">
+    <mat-icon>shopping_cart</mat-icon>
+  </button>
+</div>
+<div class="flex-container">
+  <div fxLayout.xs="column" (click)="element.isSelected=!element.isSelected" class="card"
+    *ngFor="let element of stocks | filter:filterText ;let i = index">
+    {{element.name}}<br>{{element.category}}<br>
+
+    <mat-form-field>
+      <mat-label>Quantity</mat-label>
+      <mat-select xLayout.xs="column" [(ngModel)]="element.selectedQuantity">
+        <mat-option *ngFor="let quantity of fetchQuantity(i)" [value]="quantity">
+          {{quantity}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-button (click)="addToCart(i)" [disabled]="!element.selectedQuantity || fetchQuantity(i).length == 0">
+      <mat-icon>add_shopping_cart</mat-icon>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+.card{
+   background-color: lightgrey;
+  width: 250px;
+  border: 10px solid grey;
+  padding: 5px;
+  margin: 20px;
+}
+.example-card {
+  max-width: 300px;
+  margin: 4px
+}
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+ .full-width {
+   width: 100%
+}
