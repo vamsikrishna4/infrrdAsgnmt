@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { StocksHandlerService } from '../stock-handler.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -12,28 +13,33 @@ export class CartComponent implements OnInit, OnDestroy {
   dataSource;
   cartList = [];
   stocks = [];
+  private subscriptions = new Subscription();
   constructor(private router: Router,
     private stockHandlerService: StocksHandlerService) { }
 
   ngOnInit() {
+    this.subscriptions.add(
     this.stockHandlerService.getOnCartItems.subscribe((data) => {
       data.forEach(element => {
         element.isEditable = false;
         this.cartList.push(element);
       });
       this.dataSource = this.cartList;
-    });
+    })
+    );
+    this.subscriptions.add(
     this.stockHandlerService.getStock.subscribe((data) => {
       this.stocks = data;
-    });
+    })
+    );
   }
-  onHomeButtonClick() {
+  onHomeButtonClick() { //on click of home button
     this.router.navigateByUrl('/home');
   }
-  onEdit(index) {
+  onEdit(index) { // to enable edit
     this.cartList[index].isEditable = true;
   }
-  onEditSubmit(index) {
+  onEditSubmit(index) { // to submit modified changes
     this.cartList[index].isEditable = false; //as this is confirmation to submit and disable it
     this.stockHandlerService.updateCartItems(this.cartList); //to directly update data in service
     let indexInStock = this.stocks.findIndex(x => x.name == this.cartList[index].item.name)
@@ -42,11 +48,11 @@ export class CartComponent implements OnInit, OnDestroy {
     stockElement.available = stockElement.total - this.cartList[index].quantity;
     this.stockHandlerService.updateStocksFromCart(indexInStock, stockElement);
   }
-  removeFromCart(index) {
+  removeFromCart(index) { // to remove items from the cart
     this.cartList.splice(index, 1);
     this.stockHandlerService.updateCartItems(this.cartList);
   }
-  fetchQuantity(index) {
+  fetchQuantity(index) { // to fetch quantity of items that have been added in the cart for particular bike
     let element = this.cartList[index];
     let stockIndex = this.stocks.findIndex(x => x.name == element.item.name);
 
@@ -57,7 +63,7 @@ export class CartComponent implements OnInit, OnDestroy {
     return quantityArray;
   }
   ngOnDestroy() {
-
+this.subscriptions.unsubscribe();
   }
 
 }
